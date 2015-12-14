@@ -1,0 +1,223 @@
+<HTML>
+<HEAD>
+<style type="text/css">
+      canvas { border: 1px solid black; }
+    </style>
+    <script>
+    	//code.stephenmorley.org
+function Queue(){var a=[],b=0;this.getLength=function(){return a.length-b};this.isEmpty=function(){return 0==a.length};this.enqueue=function(b){a.push(b)};this.dequeue=function(){if(0!=a.length){var c=a[b];2*++b>=a.length&&(a=a.slice(b),b=0);return c}};this.peek=function(){return 0<a.length?a[b]:void 0}};
+    </script>
+<TITLE></TITLE></HEAD>
+<BODY>
+	<!-- <form>
+	 <input type="number" id="quantity">
+	 <input class="button" type="submit" onclick="setGridSizeValue()">
+	 </form> !-->
+	 <canvas id="can" width="800" height="800"></canvas>
+	 <script>
+	 var canvas = document.getElementById("can");
+	 var ctx = canvas.getContext("2d");
+	 var gridSize = 10;
+	 var queue = new Queue();
+	 var arr = createArray(gridSize,gridSize);
+	 function Point(x,y){
+	 	this.x=x;
+	 	this.y=y;
+	 }
+	 function setGridSizeValue(){
+	 	//var grid = document.getElementById("quantity");
+	 	//gridSize = grid.value;
+	 	//alert(gridSize);
+	 	execute();
+	 }
+	 	function drawRect(i,j){
+	 		ctx.beginPath();
+	 		var x = i*40 + 40;
+	 		var y = j*40 + 40;
+      		ctx.rect(x,y, 40, 40);
+      		ctx.fillStyle = 'yellow';
+      		ctx.fill();
+      		ctx.lineWidth = 3;
+      		ctx.strokeStyle = 'black';
+      		ctx.stroke();
+	 	}
+	 	function createArray(length) {
+    		var arr = new Array(length || 0),
+        	i = length;
+
+    		if (arguments.length > 1) {
+	        var args = Array.prototype.slice.call(arguments, 1);
+	        while(i--) arr[length-1 - i] = createArray.apply(this, args);
+    	}
+
+    	return arr;
+		}
+	 	function execute(){
+	 				for(var i=0;i<gridSize;i++){
+	 					for(var j=0;j<gridSize;j++){
+	 						drawRect(i,j);
+	 					}
+	 				}
+		}
+		function randomArray(){
+			for(var i=0;i<gridSize;i++){
+	 			for(var j=0;j<gridSize;j++){
+	 				var text ;
+	 				var rand = Math.random(); 
+	 				if(rand<0.80)
+	 					text = "-";
+	 				else if(rand<0.90)
+	 					text = "W";
+	 				else
+	 					text = "D";
+	 				arr[i][j]=text;
+	 			}
+	 		}	
+		}
+
+		function randomFill(){
+			if(!queue.isEmpty()){
+				point = queue.dequeue();
+				i = point.x;
+				j = point.y;
+				// fill every nearby emty place with 1
+					/*	if(i-1>=0 && j-1>=0 && arr[i-1][j-1]=="-"){
+							arr[i-1][j-1]=arr[i][j] + 1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i-1,j-1));
+						} */
+ 						if(i-1>=0 && arr[i-1][j]=="-"){
+							arr[i-1][j]=arr[i][j] + 1;
+							////sleepTime(100);
+						   //setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i-1,j));
+						}
+						/* if(i-1>=0 && j+1<=gridSize-1 && arr[i-1][j+1]=="-"){
+							arr[i-1][j+1]=arr[i][j] + 1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i-1,j+1));
+						} */
+						if(j+1<=gridSize-1 && arr[i][j+1]=="-"){
+							arr[i][j+1]=arr[i][j] + 1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i,j+1));
+						}
+						/*if(i+1<=gridSize-1 && j+1<=gridSize-1 && arr[i+1][j+1]=="-"){
+							arr[i+1][j+1]=arr[i][j] + 1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i+1,j+1));
+						}*/
+						if(i+1<=gridSize-1 && arr[i+1][j]=="-"){
+							arr[i+1][j]=arr[i][j] + 1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i+1,j));
+						}
+						/*if(i+1<=gridSize-1 && j-1>=0 && arr[i+1][j-1]=="-"){
+							arr[i+1][j-1]=arr[i][j] + 1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i+1,j-1));
+						}*/
+						if(j-1>=0 && arr[i][j-1]=="-"){
+							arr[i][j-1]=arr[i][j] + 1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i,j-1));
+						}
+			}
+			ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+			execute();
+			for(var i=0;i<gridSize;i++){
+				for(var j=0;j<gridSize;j++){
+					if(arr[i][j]=="W")
+						ctx.fillStyle = "red";
+					else if(arr[i][j]=="D")
+						ctx.fillStyle = "blue";
+					else if(arr[i][j] == "-")
+						ctx.fillStyle = "green";
+					else
+						ctx.fillStyle = "purple";
+					ctx.font='30px Calibri';
+	 				ctx.fillText(arr[i][j],i*40 + 50,(j+1)*40 + 30);
+				}
+			}
+
+		}
+		function algorithm(){
+			for(var i=0;i<gridSize;i++){
+				for(var j=0;j<gridSize;j++){
+					if(arr[i][j]=="D"){
+						// fill every nearby emty place with 1
+						/* if(i-1>=0 && j-1>=0 && arr[i-1][j-1]=="-"){
+							arr[i-1][j-1]=1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							queue.enqueue(new Point(i-1,j-1));
+						} */
+						if(i-1>=0 && arr[i-1][j]=="-"){
+							arr[i-1][j]=1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							//sleepTime(100);
+							queue.enqueue(new Point(i-1,j));
+						}
+						/* if(i-1>=0 && j+1<=gridSize-1 && arr[i-1][j+1]=="-"){
+							arr[i-1][j+1]=1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							//sleepTime(100);
+							queue.enqueue(new Point(i-1,j+1));
+						} */
+						if(j+1<=gridSize-1 && arr[i][j+1]=="-"){
+							arr[i][j+1]=1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							//sleepTime(100);
+							queue.enqueue(new Point(i,j+1));
+						}
+						/* if(i+1<=gridSize-1 && j+1<=gridSize-1 && arr[i+1][j+1]=="-"){
+							arr[i+1][j+1]=1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							//sleepTime(100);
+							queue.enqueue(new Point(i+1,j+1));
+						} */
+						if(i+1<=gridSize-1 && arr[i+1][j]=="-"){
+							arr[i+1][j]=1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							//sleepTime(100);
+							queue.enqueue(new Point(i+1,j));
+						}
+						/* if(i+1<=gridSize-1 && j-1>=0 && arr[i+1][j-1]=="-"){
+							arr[i+1][j-1]=1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							//sleepTime(100);
+							queue.enqueue(new Point(i+1,j-1));
+						} */
+						if(j-1>=0 && arr[i][j-1]=="-"){
+							arr[i][j-1]=1;
+							////sleepTime(100);
+							//setTimeout(function(){randomFill();},1000);
+							//sleepTime(100);
+							queue.enqueue(new Point(i,j-1));
+						}
+					}
+				}
+			}
+		}
+			
+		setGridSizeValue();
+		randomArray();
+		execute();
+		algorithm();
+		setInterval(randomFill,400);
+	 </script>
+</BODY>
+</HTML>
